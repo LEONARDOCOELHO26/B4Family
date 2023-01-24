@@ -14,7 +14,7 @@ while True:
     print("[1] Login\n [2]cadastro\n [3]Sair")
     inicial = int(input("Digite a opção"))
     if inicial == 1:
-        conn  =  sql.connect ( 'mydatabase.db' )
+        conn  =  sql.connect ( 'bank_database.db' )
         cursor  =  conn.cursor ()
         cur = conn.cursor()
         user = input("user")
@@ -24,6 +24,21 @@ while True:
         if not cur.fetchone():
             print("Login failed")
         else:
+            #message
+            targetuser = user
+            rows = cursor.execute(
+                "SELECT number FROM bank_user WHERE user = ?",
+            (targetuser,),
+            ).fetchall()
+            number = str(rows)
+            phone_number = "+55" + number[2:13]
+            print(rows)
+            print(phone_number)
+            message_sing_in = client.messages.create(
+            body="a sua conta do B4Family Foi a acessada",
+            from_=keys.twilio_number,
+            to=phone_number)
+
             clear_console()
             menu = '''
         ==========banco-sarme==========
@@ -100,21 +115,21 @@ while True:
         s_comfirm_password = input("comfirme password")
         if s_password == s_comfirm_password:
             cursor.execute("""
-            INSERT INTO user(full_name, user, number, password)
+            INSERT INTO bank_user(full_name, user, number, password)
             VALUES (?,?,?,?)
             """, ( s_full_name,s_user,s_number, s_password))
             conn.commit ()
 
             ##send a message comfirm
             phone_number = "+55" + s_number
-            message_sing_in = client.messages.create(
+            client.messages.create(
             body="Obrigado por se cadastrar no B4Family",
             from_=keys.twilio_number,
             to=phone_number)
 
                 # Display columns
             print('\nColumns in bank_user table:')
-            data=cursor.execute('''SELECT * FROM user''')
+            data=cursor.execute('''SELECT * FROM bank_user''')
             for column in data.description:
                 print(column[0])
                 
