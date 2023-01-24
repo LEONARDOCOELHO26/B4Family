@@ -1,12 +1,24 @@
 import os
-import  sqlite3
-conn  =  sqlite3 . connect ( 'mydatabase.db' )
+import  sqlite3 as sql
+
+'''cursor.execute("""
+    INSERT INTO bank_user(full_name,saldo, user,number, password)
+    VALUES (?,?,?,?,?)
+    """, ( s_full_name,s_saldo,s_number,s_user, s_password))
+conn.commit ()'''
+
+conn  =  sql.connect ( 'bank_database.db' )
 cursor  =  conn.cursor ()
+cur = conn.cursor()
+user = input("user")
+password = input("password")
+statement = f"SELECT * from bank_user WHERE user='{user}' AND password = '{password}';"
+cur.execute(statement)
+if not cur.fetchone():
+    print("Login failed")
+else:
 
-
-user =cursor.execute('''SELECT user FROM bank_user''')
-
-menu = '''
+    menu = '''
 ==========banco-sarme==========
         [1] Depositar
         [2] Sacar
@@ -15,7 +27,18 @@ menu = '''
 ===============================
 '''
 print("Bem-vindo",user)
-saldo = 0
+##collect money
+
+targetuser = user
+rows = cursor.execute(
+    "SELECT saldo FROM bank_user WHERE user = ?",
+(targetuser,),
+).fetchall()
+saldo_bad = str(rows)
+bad_chars = [';', ':', '!', "*", " ","(",")",",","[","]","."]
+test_string = saldo_bad
+saldo = ''.join(map(lambda x: x if x not in bad_chars else '', test_string))
+saldo = float(saldo)
 limite = 500
 extrato = ""
 numero_saques = 0
@@ -30,7 +53,10 @@ while True:
         if valor > 0:
             saldo += valor
             extrato += f"depósito: R$ {valor:.2f}\n"
-        
+            cursor.execute("""
+            UPDATE bank_user SET (saldo) FROM user WHERE user = ?;
+            """, (saldo))
+            conn.commit ()
         else:
             print ("Operação falhou")
     

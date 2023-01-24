@@ -113,11 +113,12 @@ while True:
         s_number = input("numero")
         s_password = input("password")
         s_comfirm_password = input("comfirme password")
+        s_saldo = 0
         if s_password == s_comfirm_password:
             cursor.execute("""
-            INSERT INTO bank_user(full_name, user, number, password)
-            VALUES (?,?,?,?)
-            """, ( s_full_name,s_user,s_number, s_password))
+            INSERT INTO bank_user(full_name, user, number, password,saldo)
+            VALUES (?,?,?,?,?)
+            """, ( s_full_name,s_user,s_number, s_password, s_saldo))
             conn.commit ()
 
             ##send a message comfirm
