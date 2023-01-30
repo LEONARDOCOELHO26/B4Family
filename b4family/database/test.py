@@ -16,7 +16,7 @@ def city_state_country(coord):
 print(city_state_country(g.latlng))
 print(now.day,"/",now.month,"/",now.year,now.hour,":",now.minute)'''
 
-from marketing_notifications_python.models import app_db
+'''from marketing_notifications_python.models import app_db
 
 db = app_db()
 
@@ -29,7 +29,11 @@ class Subscriber(db.Model):
     subscribed = db.Column(db.Boolean, nullable=False, default=True)
 
     def __repr__(self):
-        return '<Subscriber %r %r>' % self.phone_number, self.subscribed
+        return '<Subscriber %r %r>' % self.phone_number, self.subscribed'''
+
+name = "leo"
+teste = f"ola {name}"
+print(teste)
 
 
 
