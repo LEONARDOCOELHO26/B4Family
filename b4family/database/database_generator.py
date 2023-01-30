@@ -1,5 +1,5 @@
 import sqlite3 as sql
-conn  =  sql.connect ( 'bank_database.db' )
+conn  =  sql.connect ( 'teste_database.db' )
 cursor  =  conn.cursor ()
 cur = conn.cursor()
 

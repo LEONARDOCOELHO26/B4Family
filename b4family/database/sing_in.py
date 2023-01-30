@@ -6,7 +6,7 @@ cursor  =  conn.cursor ()
 
 
 s_full_name = input("fullname")
-s_saldo = 0
+s_saldo = 0.0001
 s_user = input("user")
 s_number = input("numero")
 s_password = input("password")
