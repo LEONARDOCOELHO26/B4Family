@@ -24,7 +24,27 @@ while True:
         if not cur.fetchone():
             print("Login failed")
         else:
-            #message
+            #localização e o horario
+            import geocoder
+            from geopy.geocoders import Nominatim
+            import datetime
+            g = geocoder.ip('me')
+            now = datetime.datetime.now()
+            geolocator = Nominatim(user_agent="geoapiExercises")
+            def city_state_country(coord):
+                location = geolocator.reverse(coord, exactly_one=True)
+                address = location.raw["address"]
+                city = address.get("city", )
+                state = address.get('state', )
+                country = address.get('country',)
+                return city, state, country
+            city_bad = str(city_state_country (g.latlng))
+            bad_chars = ["(",")","'"]
+            test_string = city_bad
+            city = ''.join(map(lambda x: x if x not in bad_chars else '', test_string))
+            print(city)
+            time= f"{now.day}/{now.month}/{now.year} {now.hour}:{now.minute}"
+                            #message
             targetuser = user
             rows = cursor.execute(
                 "SELECT number FROM bank_user WHERE user = ?",
@@ -35,7 +55,7 @@ while True:
             print(rows)
             print(phone_number)
             message_sing_in = client.messages.create(
-            body="a sua conta do B4Family Foi a acessada",
+            body=f"{user} a sua conta do B4Family Foi a acessada em {city} ás {time} ",
             from_=keys.twilio_number,
             to=phone_number)
 
@@ -124,21 +144,9 @@ while True:
             ##send a message comfirm
             phone_number = "+55" + s_number
             client.messages.create(
-            body="Obrigado por se cadastrar no B4Family",
+            body=f"Obrigado {s_full_name}  por se cadastrar no B4Family",
             from_=keys.twilio_number,
             to=phone_number)
-
-                # Display columns
-            print('\nColumns in bank_user table:')
-            data=cursor.execute('''SELECT * FROM bank_user''')
-            for column in data.description:
-                print(column[0])
-                
-            print('\nData in user table:')
-            data=cursor.execute('''SELECT * FROM bank_user''')
-            for row in data:
-                print(row)
-
         else:
             print("as senhas não são iguais")
         conn . close ()
