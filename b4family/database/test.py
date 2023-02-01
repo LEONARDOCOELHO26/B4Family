@@ -21,26 +21,31 @@ test_string = city_bad
 city = ''.join(map(lambda x: x if x not in bad_chars else '', test_string))
 print(city)
 time= f"{now.day}/{now.month}/{now.year} {now.hour}:{now.minute}"'''
-
+import hashlib
 import sqlite3 as sql
-conn  =  sql.connect ( 'teste_database.db' )
-cursor  =  conn.cursor()
-cur = conn.cursor()
-user = input("user")
-password = input("password")
-statement = f"SELECT * from bank_user WHERE user='{user}' AND password = '{password}';"
-cur.execute(statement)
-if not cur.fetchone():
+
+conn = sql.connect('teste_database.db')
+cursor = conn.cursor()
+
+user = input("user: ")
+password = input("password: ")
+password = hashlib.sha256(password.encode()).hexdigest()
+
+cursor.execute(f"SELECT * from bank_user WHERE user='{user}' AND password='{password}'")
+result = cursor.fetchone()
+
+if not result:
     print("Login failed")
 else:
     print("Login successful")
-targetuser = user
-rows = cursor.execute(
-        f"SELECT saldo FROM bank_user WHERE user = '{user}' AND password = '{password}';",
-    (),
-    ).fetchall()
-saldo = str(rows)
-bad_chars = [';', ':', '!', "*", " ","(",")",",","[","]"]
-saldo = ''.join(map(lambda x: x if x not in bad_chars else '', saldo_bad))
-saldo = float(saldo)
-print(saldo)
+    id = result[0]
+    full_name = result[1]
+    saldo = result[2]
+    print(f"ID: {id}")
+    saldo += 1
+    cursor.execute(f"UPDATE bank_user SET saldo={saldo} WHERE ID={id}")
+    conn.commit()
+    saldo_formatted = 'R$ {:,.2f}'.format(saldo)
+    print(f"Seu saldo é de {saldo_formatted}")
+
+conn.close()
