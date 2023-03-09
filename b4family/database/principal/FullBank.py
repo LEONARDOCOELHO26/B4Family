@@ -1,10 +1,18 @@
+import sqlite3
 import sqlite3 as sql
 import os 
 import twilio
 import hashlib
 from twilio.rest import Client
 import keys
+import geocoder
+from geopy.geocoders import Nominatim
+import datetime
 client = Client(keys.account_sid, keys.auth_token)
+conn  =  sql.connect ( 'database.db' )
+cursor  =  conn.cursor ()
+cur = conn.cursor()
+now = datetime.datetime.now()
 
 def clear_console():
     os.system('cls')
@@ -15,9 +23,6 @@ while True:
     print("[1] Login\n [2]cadastro\n [3]Sair")
     inicial = int(input("Digite a opção"))
     if inicial == 1:
-        conn  =  sql.connect ( 'bank_database.db' )
-        cursor  =  conn.cursor ()
-        cur = conn.cursor()
         user = input("user: ")
         password = input("password: ")
         password = hashlib.sha256(password.encode()).hexdigest()
@@ -27,9 +32,7 @@ while True:
             print("Login failed")
         else:
             #localização e o horario
-            import geocoder
-            from geopy.geocoders import Nominatim
-            import datetime
+            
             g = geocoder.ip('me')
             now = datetime.datetime.now()
             geolocator = Nominatim(user_agent="geoapiExercises")
@@ -70,6 +73,7 @@ while True:
             while True:
                 cur.execute (f"SELECT * from bank_user WHERE user='{user}' AND password = '{password}';")
                 result = cur.fetchone()
+                conta = 123
                 id = result[0]
                 saldo = 'R$ {:,.2f}'.format(result[2])
                 saldo_float = float(result[2])
@@ -85,12 +89,14 @@ while True:
                 ''')
                 if opcao == "1":
                     valor = float(input("Informe o valor do depósito:"))
+                    data = f"{now.day}/{now.month}/{now.year} {now.hour}:{now.minute}"
+                    descricao = 'deposito'
                     if valor > 0:
-                        extrato += f"depósito: R$ {valor:.2f}\n"
                         cur.execute(f"UPDATE bank_user SET saldo = saldo + {valor} WHERE ID = '{id}';")
+                        conn = sqlite3.connect('extrato.db')
+                        c = conn.cursor()
+                        c.execute("INSERT INTO transacoes VALUES (?,?,?,?)", (conta,data, descricao, valor))
                         conn.commit ()
-                    else:
-                        print ("Operação falhou")
                 elif opcao == "2":
 
                     valor = float(input("Informe o valor do saque:"))
@@ -107,10 +113,14 @@ while True:
                         print("Operação falhou! você excedeu o limite ")
                     elif excedeu_saques:
                         print("Operação falhou! você excedeu o limite diario")
-
                     elif valor > 0:
                         extrato += f"Saque: R$ {valor:.2f}\n"
                         cur.execute(f"UPDATE bank_user SET saldo = saldo - {valor} WHERE ID = '{id}';")  
+                        conn.commit ()
+                        descricao = "saque"
+                        data = f"{now.day}/{now.month}/{now.year} {now.hour}:{now.minute}"
+                        c = conn.cursor()
+                        c.execute("INSERT INTO transacoes VALUES (?,?,?,?)", (conta,data, descricao, valor))
                         conn.commit ()       
                         numero_saques += 1
                         print(numero_saques)
@@ -118,9 +128,13 @@ while True:
                         print("Operação falhou!O valor Informado é valído") 
 
                 elif opcao == "3":
+                    conn = sqlite3.connect('extrato.db')
+                    c = conn.cursor()
+                    resultado = c.execute(f"SELECT * FROM transacoes where conta = {conta} ORDER BY data DESC ").fetchall()
+                    conn.close()
                     print("======================================")
-                    print("Nâo foi ralizada nenhuma movimentação." if not extrato else extrato)
-                    print(f"Saldo: {saldo}")
+                    for resultado in resultado:
+                        print(resultado)
                     print("======================================")
                 elif opcao == "4":
                     print("Obrigado por utilizar nossos serviços")
@@ -129,9 +143,6 @@ while True:
                     print("Operação Invalida,Digite novamente a operação")
     elif inicial == 2:
         clear_console()
-        import  sqlite3
-        conn  =  sqlite3 . connect ( 'bank_database.db' )
-        cursor  =  conn.cursor ()
         s_full_name = input("fullname")
         s_saldo = 0.0
         s_user = input("user")
