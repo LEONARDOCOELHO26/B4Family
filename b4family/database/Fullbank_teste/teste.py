@@ -1,45 +1,24 @@
+import random
 import sqlite3
-import sqlite3 as sql
-import datetime
 
-conta = int(input("conta"))
-password = int(input("password"))
+def gerar_numero_unico():
+    conexao = sqlite3.connect('nome_do_banco_de_dados.db')
+    cursor = conexao.cursor()
 
-if conta == 123 and password == 123 or conta == 1234 and password == 1234:
+    # Gerar um número aleatório entre 10000 e 99999
+    numero = random.randint(10000, 99999)
+
+    # Verificar se o número já existe na tabela
     while True:
-        # Conecta ao banco de dados
-        conn = sqlite3.connect('extrato.db')
-        c = conn.cursor()
-        now = datetime.datetime.now()
-        data = f"{now.day}/{now.month}/{now.year} {now.hour}:{now.minute}"
-        descricao = input("Descricao: ")
-        valor = float(input("Informe o valor do depósito:"))
-        if valor > 0:
-            extrato += f"depósito: R$ {valor:.2f}\n"
-            cur.execute(f"UPDATE bank_user SET saldo = saldo + {valor} WHERE ID = '{id}';")
-            c.execute("INSERT INTO transacoes VALUES (?,?,?,?)", (conta,data, descricao, valor))
-            conn.commit ()
-        else:
-            print ("Operação falhou")
-
-        # Insere a transacao na tabela "transacoes"
-        
-
-        conn.commit()
-        conn.close()
-
-
-        # Conecta ao banco de dados
-        conn = sqlite3.connect('extrato.db')
-        c = conn.cursor()
-        resultado = c.execute(f"SELECT * FROM transacoes where conta = {conta} ORDER BY data DESC ").fetchall()
-        conn.close()
-        for resultado in resultado:
-            print(resultado)
-        continua = input("Continuar (s/n)?")
-
-        if continua == 'n':
+        cursor.execute('SELECT COUNT(*) FROM numeros_gerados WHERE numero = ?', (numero,))
+        if cursor.fetchone()[0] == 0:
             break
-else:
-    print("essa conta não existe")
+        else:
+            numero = random.randint(10000, 99999)
+
+    # Inserir o número na tabela
+    cursor.execute('INSERT INTO numeros_gerados (numero) VALUES (?)', (numero,))
+    conexao.commit()
+
+    return numero
 
