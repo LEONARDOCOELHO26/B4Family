@@ -2,6 +2,7 @@ import sqlite3
 import sqlite3 as sql
 import os 
 import twilio
+import random
 import hashlib
 from twilio.rest import Client
 import keys
@@ -17,6 +18,21 @@ now = datetime.datetime.now()
 def clear_console():
     os.system('cls')
 clear_console()
+
+def gerar_numero_unico():
+    conexao = sqlite3.connect('teste_database.db')
+    cursor = conexao.cursor()
+    numero = random.randint(10000, 99999)
+    while True:
+        cursor.execute('SELECT COUNT(*) FROM bank_user WHERE conta = ?', (numero,))
+        if cursor.fetchone()[0] == 0:
+            break
+        else:
+            numero = random.randint(10000, 99999)
+
+    # Inserir o número na tabela
+    conexao.commit()
+    return numero
 
 while True:
     print("Bem-vindo ao banco B4Famaly")
@@ -73,10 +89,11 @@ while True:
             while True:
                 cur.execute (f"SELECT * from bank_user WHERE user='{user}' AND password = '{password}';")
                 result = cur.fetchone()
-                conta = 123
+                conta = float(result[6])
                 id = result[0]
                 saldo = 'R$ {:,.2f}'.format(result[2])
                 saldo_float = float(result[2])
+
                 opcao = input(f'''
                 ==========banco-sarme==========
                 Bem-Vindo de volta {fullname}
@@ -147,7 +164,7 @@ while True:
         s_saldo = 0.0
         s_user = input("user")
         s_number = input("numero")
-
+        s_conta = gerar_numero_unico()
         s_password = input("password").encode('utf-8')
         s_password = hashlib.sha256(s_password).hexdigest()
 
@@ -156,9 +173,9 @@ while True:
 
         if s_password == s_comfirm_password:
             cursor.execute("""
-            INSERT INTO bank_user(full_name,saldo, user,number, password)
-            VALUES (?,?,?,?,?)
-            """, (s_full_name, s_saldo, s_user, s_number, s_password))
+            INSERT INTO bank_user(full_name,saldo, user,number, password,conta)
+            VALUES (?,?,?,?,?,?)
+            """, (s_full_name, s_saldo, s_user, s_number, s_password, s_conta))
             conn.commit()
             print("Data Inserted in the table: ")
 

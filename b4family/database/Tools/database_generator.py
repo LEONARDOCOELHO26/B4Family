@@ -1,23 +1,21 @@
 import sqlite3 as sql
-conn  =  sql.connect ( 'teste_database.db' )
+conn  =  sql.connect ( 'database.db' )
 cursor  =  conn.cursor ()
 cur = conn.cursor()
 
 
-table = """ CREATE TABLE numeros_gerados (
-            numero INT
-)"""
-conn.execute(table)
-'''table = """ CREATE TABLE bank_user (
+'''table = """ CREATE TABLE numeros_gerados (id INTEGER PRIMARY KEY, numero INTEGER)"""
+conn.execute(table)'''
+table = """ CREATE TABLE bank_user (
             ID integer PRIMARY KEY,
             full_name char(255),
             saldo float,
             user char(255),
             number int(11),
             password char(255),
-            conta int(5)
+            conta char(5)
         ); """
-conn.execute(table)'''
+conn.execute(table)
 
 '''conn  =  sql.connect ( 'extrato.db' )
 cursor  =  conn.cursor ()

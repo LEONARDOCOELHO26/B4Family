@@ -22,3 +22,4 @@ def gerar_numero_unico():
 
     return numero
 
+gerar_numero_unico()

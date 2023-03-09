@@ -8,7 +8,7 @@ cur = conn.cursor()
 print('\nColumns in bank_user table:')
 data=cursor.execute('''SELECT * FROM numeros_gerados''')
 for column in data.description:
-    print(column[0])
+    print(column)
                 
 print('\nData in user table:')
 data=cursor.execute('''SELECT * FROM numeros_gerados''')
