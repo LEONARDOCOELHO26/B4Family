@@ -20,7 +20,7 @@ def clear_console():
 clear_console()
 
 def gerar_numero_unico():
-    conexao = sqlite3.connect('teste_database.db')
+    conexao = sqlite3.connect('database.db')
     cursor = conexao.cursor()
     numero = random.randint(10000, 99999)
     while True:
@@ -72,11 +72,11 @@ while True:
             (targetuser,),
             ).fetchall()
             number = str(rows)
-            phone_number = "+55" + number[2:13]
+            """phone_number = "+55" + number[2:13]
             message_sing_in = client.messages.create(
             body=f"{user} a sua conta do B4Family Foi a acessada em {city} ás {time} ",
             from_=keys.twilio_number,
-            to=phone_number)
+            to=phone_number)"""
 
             clear_console()
             cursor.execute(f"SELECT * from bank_user WHERE user='{user}' AND password='{password}'")
@@ -105,14 +105,13 @@ while True:
                 ===============================
                 ''')
                 if opcao == "1":
-                    valor = float(input("Informe o valor do depósito:"))
+                    valor = float(input(f"Informe o valor do depósito:"))
                     data = f"{now.day}/{now.month}/{now.year} {now.hour}:{now.minute}"
                     descricao = 'deposito'
                     if valor > 0:
-                        cur.execute(f"UPDATE bank_user SET saldo = saldo + {valor} WHERE ID = '{id}';")
-                        conn = sqlite3.connect('extrato.db')
-                        c = conn.cursor()
-                        c.execute("INSERT INTO transacoes VALUES (?,?,?,?)", (conta,data, descricao, valor))
+                        cur.execute(f"UPDATE bank_user SET saldo = saldo + {valor} WHERE ID = {id};")
+                        conn.commit ()
+                        cur.execute("INSERT INTO transacoes VALUES (?,?,?,?)", (conta,data, descricao, valor))
                         conn.commit ()
                 elif opcao == "2":
 
@@ -132,13 +131,11 @@ while True:
                         print("Operação falhou! você excedeu o limite diario")
                     elif valor > 0:
                         extrato += f"Saque: R$ {valor:.2f}\n"
-                        cur.execute(f"UPDATE bank_user SET saldo = saldo - {valor} WHERE ID = '{id}';")  
-                        conn.commit ()
+                        cur.execute(f"UPDATE bank_user SET saldo = saldo - {valor} WHERE ID = {id};") 
                         descricao = "saque"
                         data = f"{now.day}/{now.month}/{now.year} {now.hour}:{now.minute}"
-                        c = conn.cursor()
-                        c.execute("INSERT INTO transacoes VALUES (?,?,?,?)", (conta,data, descricao, valor))
-                        conn.commit ()       
+                        cur.execute("INSERT INTO transacoes VALUES (?,?,?,?)", (conta,data, descricao, valor))
+                        conn.commit()       
                         numero_saques += 1
                         print(numero_saques)
                     else:
@@ -156,7 +153,7 @@ while True:
                         pdf.setFillColorRGB(0, 0, 0)
                         data = f"{now.day}/{now.month}/{now.year} {now.hour}:{now.minute}"
                         pdf.drawString(50, 750, "-------------------------------------Extrato Bancário-------------------------------------")
-                        conn = sqlite3.connect('extrato.db')
+                        conn = sqlite3.connect('database.db')
                         c = conn.cursor()
                         resultado = c.execute(f"SELECT * FROM transacoes WHERE conta = {conta} ORDER BY data DESC ").fetchall()
                         conn.close()
@@ -181,7 +178,7 @@ while True:
                         pdf.drawString(150, 10, "Obrigado!Por Usar os serviços da B4Family.")
                         pdf.showPage()
                         pdf.save()
-                    conn = sqlite3.connect('extrato.db')
+                    conn = sqlite3.connect('database.db')
                     c = conn.cursor()
                     resultado = c.execute(f"SELECT * FROM transacoes where conta = {conta} ORDER BY data DESC ").fetchall()
                     conn.close()

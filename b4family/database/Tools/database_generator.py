@@ -4,8 +4,7 @@ cursor  =  conn.cursor ()
 cur = conn.cursor()
 
 
-'''table = """ CREATE TABLE numeros_gerados (id INTEGER PRIMARY KEY, numero INTEGER)"""
-conn.execute(table)'''
+
 table = """ CREATE TABLE bank_user (
             ID integer PRIMARY KEY,
             full_name char(255),
@@ -16,6 +15,14 @@ table = """ CREATE TABLE bank_user (
             conta char(5)
         ); """
 conn.execute(table)
+table = """ CREATE TABLE transacoes (
+            conta char(7),
+            data char(50),
+            descricao char(50),
+            valor float
+        ); """
+conn.execute(table)
+
 
 '''conn  =  sql.connect ( 'extrato.db' )
 cursor  =  conn.cursor ()
