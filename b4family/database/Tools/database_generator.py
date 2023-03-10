@@ -24,8 +24,8 @@ cur = conn.cursor()
 
 table = """ CREATE TABLE transacoes (
             conta char(7),
-            data char(255),
-            descricao char(255),
+            data char(50),
+            descricao char(50),
             valor float
         ); """
 conn.execute(table)'''
