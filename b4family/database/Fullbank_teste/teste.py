@@ -1,53 +1,27 @@
-def envio_cadastro():
-    import smtplib
-    from email.mime.multipart import MIMEMultipart
-    from email.mime.text import MIMEText
-    from keys import emailB4
-    from keys import passwordB4
-
-    phone_number = "41992483105"
-    email_user = "alfredocoelho16@gmail.com"
-    user = "leo"
-    # cria o objeto mensagem
-    msg = MIMEMultipart()
-
-    # define os detalhes da mensagem, como remetente, destinatário, assunto e corpo da mensagem
-    msg['From'] = f"{emailB4}"
-    msg['To'] = f'{email_user}'
-    msg['Subject'] = 'Seja-Bem vindo ao grupo B4Family'
-
-    corpo = 'esse é apenas um email de comfirmação de criação de conta'
-    msg.attach(MIMEText(corpo, 'plain'))
-
-    # estabelece a conexão com o servidor SMTP e loga no servidor com as credenciais do seu email
-    servidor_smtp = 'smtp.gmail.com'
-    porta_smtp = 587
-    usuario = f"{emailB4}"
-    senha = f'{passwordB4}'
-
-    server = smtplib.SMTP(servidor_smtp, porta_smtp)
-    server.starttls() # define a criptografia TLS
-    server.login(usuario, senha)
-
-    # envia a mensagem
-    texto_email = msg.as_string()
-
-    server.sendmail(usuario, msg['To'], texto_email)
-
-    server.quit() 
-    targetuser = user
-    rows = cursor.execute(
-                "SELECT number FROM bank_user WHERE user = ?",
-    (targetuser,),
-            ).fetchall()
-    number = str(rows)
-    phone_number = "+5541992483105" 
-    message_sing_in = client.messages.create(
-    body=f"{user} Seja bem vindo ao Banco B4Family ",
-    from_=keys.twilio_number,
-    to=phone_number)
-
-envio_cadastro()
+conta_pagou = conta
+conta_recebe = input("Digite a conta")
+valor = input('insira o valor do pix')
+if valor > saldo:
+    print("Operação falhou! você excedeu seu saldo")
+elif valor > "0":
+    data = f"{now.day}/{now.month}/{now.year} {now.hour}:{now.minute}"
+    query = f"SELECT * FROM bank_user WHERE conta = '{conta_recebe}'"
+    cursor.execute(query)
+    result = cursor.fetchall()
+    if result:
+        descricao_recebe = "pix recebido"
+        print("dinheiro depositado")
+        cur.execute(f"UPDATE bank_user SET saldo = saldo + {valor} WHERE conta = {conta_recebe};")
+        conn.commit ()
+        cur.execute("INSERT INTO transacoes VALUES (?,?,?,?)", (conta_recebe,data, descricao_recebe, valor))
+        conn.commit()
+        descricao_pagou = "pix enviado"
+        cur.execute(f"UPDATE bank_user SET saldo = saldo - {valor} WHERE ID = {id};") 
+                                    
+        cur.execute("INSERT INTO transacoes VALUES (?,?,?,?)", (conta_pagou,data, descricao_pagou, valor))
+        conn.commit() 
+    else:
+        print(f"A conta {conta_recebe} não existe no banco de dados.")
 
 
 

@@ -65,7 +65,7 @@ while True:
             print(city)
             time= f"{now.day}/{now.month}/{now.year} {now.hour}:{now.minute}"
             #message
-            targetuser = user
+            '''targetuser = user
             rows = cursor.execute(
                 "SELECT number FROM bank_user WHERE user = ?",
             (targetuser,),
@@ -75,7 +75,7 @@ while True:
             message_sing_in = client.messages.create(
             body=f"{user} a sua conta do B4Family Foi a acessada em {city} ás {time} ",
             from_=keys.twilio_number,
-            to=phone_number)
+            to=phone_number)'''
 
             clear_console()
             cursor.execute(f"SELECT * from bank_user WHERE user='{user}' AND password='{password}'")
@@ -88,7 +88,7 @@ while True:
             while True:
                 cur.execute (f"SELECT * from bank_user WHERE user='{user}' AND password = '{password}';")
                 result = cur.fetchone()
-                conta = float(result[6])
+                conta = float(result[7])
                 id = result[0]
                 saldo = 'R$ {:,.2f}'.format(result[2])
                 saldo_float = float(result[2])
@@ -98,9 +98,10 @@ while True:
                 Bem-Vindo de volta {fullname}
                 Seu saldo é de {saldo}
                         [1] Depositar
-                        [2] Sacar
-                        [3] Extrato
-                        [4] Sair
+                        [2] Trasferencia
+                        [3] Sacar
+                        [4] Extrato
+                        [5] Sair
                 ===============================
                 ''')
                 if opcao == "1":
@@ -113,10 +114,36 @@ while True:
                         cur.execute("INSERT INTO transacoes VALUES (?,?,?,?)", (conta,data, descricao, valor))
                         conn.commit ()
                 elif opcao == "2":
+                        conta_pagou = conta
+                        conta_recebe = input("Digite a conta")
+                        valor = input('insira o valor do pix')
+                        if valor > saldo:
+                            print("Operação falhou! você excedeu seu saldo")
+                        elif valor > "0":
+                            data = f"{now.day}/{now.month}/{now.year} {now.hour}:{now.minute}"
+                            query = f"SELECT * FROM bank_user WHERE conta = '{conta_recebe}'"
+                            cursor.execute(query)
+                            result = cursor.fetchall()
+                            if result:
+                                descricao_recebe = "pix recebido"
+                                print("dinheiro depositado")
+                                cur.execute(f"UPDATE bank_user SET saldo = saldo + {valor} WHERE conta = {conta_recebe};")
+                                conn.commit ()
+                                cur.execute("INSERT INTO transacoes VALUES (?,?,?,?)", (conta_recebe,data, descricao_recebe, valor))
+                                conn.commit()
+                                descricao_pagou = "pix enviado"
+                                cur.execute(f"UPDATE bank_user SET saldo = saldo - {valor} WHERE ID = {id};") 
+                                    
+                                cur.execute("INSERT INTO transacoes VALUES (?,?,?,?)", (conta_pagou,data, descricao_pagou, valor))
+                                conn.commit() 
+                        else:
+                            print(f"A conta {conta_recebe} não existe no banco de dados.")
+
+                elif opcao == "3":
 
                     valor = float(input("Informe o valor do saque:"))
 
-                    excedeu_saldo = valor > saldo_float
+                    excedeu_saldo = valor > saldo
 
                     excedeu_limite = valor > limite
 
@@ -140,7 +167,7 @@ while True:
                     else:
                         print("Operação falhou!O valor Informado é valído") 
 
-                elif opcao == "3":
+                elif opcao == "4":
                     def gerador_de_extrato():
                         from reportlab.lib.pagesizes import letter
                         from reportlab.pdfgen import canvas
@@ -190,7 +217,7 @@ while True:
                         gerador_de_extrato()
                     else:
                         print("oK")
-                elif opcao == "4":
+                elif opcao == "5":
                     print("Obrigado por utilizar nossos serviços")
                     break
                 else:
