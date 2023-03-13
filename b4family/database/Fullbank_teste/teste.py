@@ -1,51 +1,53 @@
+def envio_cadastro():
+    import smtplib
+    from email.mime.multipart import MIMEMultipart
+    from email.mime.text import MIMEText
+    from keys import emailB4
+    from keys import passwordB4
 
-import sqlite3
-import datetime
-now = datetime.datetime.now()
+    phone_number = "41992483105"
+    email_user = "alfredocoelho16@gmail.com"
+    user = "leo"
+    # cria o objeto mensagem
+    msg = MIMEMultipart()
 
-def gerador_de_extrato():
-                        from reportlab.lib.pagesizes import letter
-                        from reportlab.pdfgen import canvas
-                        data = f"{now.day}-{now.month}-{now.year}"
-                        pdf_name = f'extrato{data}.pdf'
-                        pdf = canvas.Canvas(pdf_name, pagesize=letter)
-                        pdf.setFillColorRGB(0.9,0.9,0.1)
-                        pdf.setFont("Helvetica", 16)
-                        pdf.setFillColorRGB(0, 0, 0)
-                        data = f"{now.day}/{now.month}/{now.year} {now.hour}:{now.minute}"
-                        pdf.drawString(50, 750, "-------------------------------------Extrato Bancário-------------------------------------")
-                        conn = sqlite3.connect('extrato.db')
-                        c = conn.cursor()
-                        resultado = c.execute(f"SELECT * FROM transacoes WHERE conta = {conta} ORDER BY data DESC ").fetchall()
-                        conn.close()
-                        pdf.drawString(100, 730, f"conta:{conta}")
-                        pdf.drawString(400, 730, f"Data:{data}")
-                        pdf.drawString(50, 715, "------------------------------------------------------------------------------------------------")
+    # define os detalhes da mensagem, como remetente, destinatário, assunto e corpo da mensagem
+    msg['From'] = f"{emailB4}"
+    msg['To'] = f'{email_user}'
+    msg['Subject'] = 'Seja-Bem vindo ao grupo B4Family'
 
-                        y = 700  # starting position for transactions
-                        for transacao in resultado:
-                            pdf.setFillColorRGB(0,0,0)
-                            pdf.drawString(60, y, str(transacao[0]))   # id
-                            pdf.drawString(130, y, str(transacao[1]))  # data
-                            pdf.drawString(280, y, str(transacao[2]))  # descricao
-                            if str(transacao[2]) == "saque":
-                                pdf.setFillColorRGB(1,0,0)
-                                pdf.drawString(430, y, f"-R${'{:,.2f}'.format(transacao[3]).replace(',', '#').replace('.', ',').replace('#', '.')}")      # valor
-                            else:
-                                pdf.setFillColorRGB(0,0,0)
-                                pdf.drawString(430, y, f"R${'{:,.2f}'.format(transacao[3]).replace(',', '#').replace('.', ',').replace('#', '.')}")      # valor
-                            y -= 20
-                        pdf.drawString(250, 30, "10/03/2023")
-                        pdf.drawString(150, 10, "Obrigado!Por Usar os serviços da B4Family.")
-                        pdf.showPage()
-                        pdf.save()
+    corpo = 'esse é apenas um email de comfirmação de criação de conta'
+    msg.attach(MIMEText(corpo, 'plain'))
 
-escolha = input("você gostaria de imprimir o extrato?S/N")
-if escolha == "S" or "s":
-    gerador_de_extrato()
-else:
-    print("oK")
+    # estabelece a conexão com o servidor SMTP e loga no servidor com as credenciais do seu email
+    servidor_smtp = 'smtp.gmail.com'
+    porta_smtp = 587
+    usuario = f"{emailB4}"
+    senha = f'{passwordB4}'
 
+    server = smtplib.SMTP(servidor_smtp, porta_smtp)
+    server.starttls() # define a criptografia TLS
+    server.login(usuario, senha)
+
+    # envia a mensagem
+    texto_email = msg.as_string()
+
+    server.sendmail(usuario, msg['To'], texto_email)
+
+    server.quit() 
+    targetuser = user
+    rows = cursor.execute(
+                "SELECT number FROM bank_user WHERE user = ?",
+    (targetuser,),
+            ).fetchall()
+    number = str(rows)
+    phone_number = "+5541992483105" 
+    message_sing_in = client.messages.create(
+    body=f"{user} Seja bem vindo ao Banco B4Family ",
+    from_=keys.twilio_number,
+    to=phone_number)
+
+envio_cadastro()
 
 
 

@@ -9,6 +9,7 @@ table = """ CREATE TABLE bank_user (
             ID integer PRIMARY KEY,
             full_name char(255),
             saldo float,
+            email char(255),
             user char(255),
             number int(11),
             password char(255),

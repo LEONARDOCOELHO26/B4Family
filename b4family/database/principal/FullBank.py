@@ -48,7 +48,6 @@ while True:
             print("Login failed")
         else:
             #localização e o horario
-            
             g = geocoder.ip('me')
             now = datetime.datetime.now()
             geolocator = Nominatim(user_agent="geoapiExercises")
@@ -72,11 +71,11 @@ while True:
             (targetuser,),
             ).fetchall()
             number = str(rows)
-            """phone_number = "+55" + number[2:13]
+            phone_number = "+55" + number[2:13]
             message_sing_in = client.messages.create(
             body=f"{user} a sua conta do B4Family Foi a acessada em {city} ás {time} ",
             from_=keys.twilio_number,
-            to=phone_number)"""
+            to=phone_number)
 
             clear_console()
             cursor.execute(f"SELECT * from bank_user WHERE user='{user}' AND password='{password}'")
@@ -197,8 +196,48 @@ while True:
                 else:
                     print("Operação Invalida,Digite novamente a operação")
     elif inicial == 2:
+        def envio_cadastro():
+            import smtplib
+            from email.mime.multipart import MIMEMultipart
+            from email.mime.text import MIMEText
+            from keys import emailB4
+            from keys import passwordB4
+
+            # cria o objeto mensagem
+            msg = MIMEMultipart()
+
+            # define os detalhes da mensagem, como remetente, destinatário, assunto e corpo da mensagem
+            msg['From'] = f"{emailB4}"
+            msg['To'] = f'{s_email}'
+            msg['Subject'] = f'Seja-Bem {s_full_name} vindo ao grupo B4Family'
+
+            corpo = 'esse é apenas um email de comfirmação de criação de conta'
+            msg.attach(MIMEText(corpo, 'plain'))
+
+            # estabelece a conexão com o servidor SMTP e loga no servidor com as credenciais do seu email
+            servidor_smtp = 'smtp.gmail.com'
+            porta_smtp = 587
+            usuario = f"{emailB4}"
+            senha = f'{passwordB4}'
+
+            server = smtplib.SMTP(servidor_smtp, porta_smtp)
+            server.starttls() # define a criptografia TLS
+            server.login(usuario, senha)
+
+            # envia a mensagem
+            texto_email = msg.as_string()
+
+            server.sendmail(usuario, msg['To'], texto_email)
+
+            server.quit() 
+            phone_number = "+55" + s_number
+            message_sing_in = client.messages.create(
+            body=f"{s_full_name} Seja bem vindo ao Banco B4Family ",
+            from_=keys.twilio_number,
+            to=phone_number)
         clear_console()
         s_full_name = input("fullname")
+        s_email = input("email")
         s_saldo = 0.0
         s_user = input("user")
         s_number = input("numero")
@@ -211,24 +250,11 @@ while True:
 
         if s_password == s_comfirm_password:
             cursor.execute("""
-            INSERT INTO bank_user(full_name,saldo, user,number, password,conta)
-            VALUES (?,?,?,?,?,?)
-            """, (s_full_name, s_saldo, s_user, s_number, s_password, s_conta))
+            INSERT INTO bank_user(full_name,saldo, email, user,number, password,conta)
+            VALUES (?,?,?,?,?,?,?)
+            """, (s_full_name, s_saldo,s_email, s_user, s_number, s_password, s_conta))
             conn.commit()
-            print("Data Inserted in the table: ")
-
-            # Display columns
-            print('\nColumns in user table:')
-            data = cursor.execute('''SELECT * FROM bank_user''')
-            for column in data.description:
-                print(column[0])
-
-            # Display data
-            print('\nData in user table:')
-            data = cursor.execute('''SELECT * FROM bank_user''')
-            for row in data:
-                print(row)
-
+            envio_cadastro()
         else:
             print("as senhas não são iguais")
         clear_console()
