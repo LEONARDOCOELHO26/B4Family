@@ -47,7 +47,7 @@ while True:
         if not cur.fetchone():
             print("Login failed")
         else:
-            #localização e o horario
+            '''#localização e o horario
             g = geocoder.ip('me')
             now = datetime.datetime.now()
             geolocator = Nominatim(user_agent="geoapiExercises")
@@ -65,7 +65,7 @@ while True:
             print(city)
             time= f"{now.day}/{now.month}/{now.year} {now.hour}:{now.minute}"
             #message
-            '''targetuser = user
+            targetuser = user
             rows = cursor.execute(
                 "SELECT number FROM bank_user WHERE user = ?",
             (targetuser,),
@@ -75,8 +75,8 @@ while True:
             message_sing_in = client.messages.create(
             body=f"{user} a sua conta do B4Family Foi a acessada em {city} ás {time} ",
             from_=keys.twilio_number,
-            to=phone_number)'''
-
+            to=phone_number)
+'''
             clear_console()
             cursor.execute(f"SELECT * from bank_user WHERE user='{user}' AND password='{password}'")
             result = cursor.fetchone()
@@ -223,7 +223,7 @@ while True:
                 else:
                     print("Operação Invalida,Digite novamente a operação")
     elif inicial == 2:
-        def envio_cadastro():
+        '''def envio_cadastro():
             import smtplib
             from email.mime.multipart import MIMEMultipart
             from email.mime.text import MIMEText
@@ -261,7 +261,7 @@ while True:
             message_sing_in = client.messages.create(
             body=f"{s_full_name} Seja bem vindo ao Banco B4Family ",
             from_=keys.twilio_number,
-            to=phone_number)
+            to=phone_number)'''
         clear_console()
         s_full_name = input("fullname")
         s_email = input("email")
