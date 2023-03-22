@@ -1,5 +1,5 @@
 import sqlite3 as sql
-conn  =  sql.connect ( 'database.db' )
+conn  =  sql.connect ( 'testedatabase.db' )
 cursor  =  conn.cursor ()
 cur = conn.cursor()
 
@@ -13,7 +13,8 @@ table = """ CREATE TABLE bank_user (
             user char(255),
             number int(11),
             password char(255),
-            conta char(5)
+            conta char(5),
+            CPF char(11)
         ); """
 conn.execute(table)
 table = """ CREATE TABLE transacoes (

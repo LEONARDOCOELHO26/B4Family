@@ -281,7 +281,7 @@ while True:
             VALUES (?,?,?,?,?,?,?)
             """, (s_full_name, s_saldo,s_email, s_user, s_number, s_password, s_conta))
             conn.commit()
-            envio_cadastro()
+            '''envio_cadastro()'''
         else:
             print("as senhas não são iguais")
         clear_console()

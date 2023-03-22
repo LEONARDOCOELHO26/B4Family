@@ -1,5 +1,5 @@
 import sqlite3 as sql
-conn  =  sql.connect ( 'database.db' )
+conn  =  sql.connect ( 'testedatabase.db' )
 cursor  =  conn.cursor ()
 cur = conn.cursor()
 
@@ -14,3 +14,5 @@ print('\nData in user table:')
 data=cursor.execute('''SELECT * FROM bank_user''')
 for row in data:
     print(row)
+
+
