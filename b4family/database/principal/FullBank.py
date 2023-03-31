@@ -47,7 +47,7 @@ while True:
         if not cur.fetchone():
             print("Login failed")
         else:
-            '''#localização e o horario
+            #localização e o horario
             g = geocoder.ip('me')
             now = datetime.datetime.now()
             geolocator = Nominatim(user_agent="geoapiExercises")
@@ -76,7 +76,6 @@ while True:
             body=f"{user} a sua conta do B4Family Foi a acessada em {city} ás {time} ",
             from_=keys.twilio_number,
             to=phone_number)
-'''
             clear_console()
             cursor.execute(f"SELECT * from bank_user WHERE user='{user}' AND password='{password}'")
             result = cursor.fetchone()
