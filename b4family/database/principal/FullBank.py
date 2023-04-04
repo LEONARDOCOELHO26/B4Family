@@ -9,6 +9,7 @@ import keys
 import geocoder
 from geopy.geocoders import Nominatim
 import datetime
+
 client = Client(keys.account_sid, keys.auth_token)
 conn  =  sql.connect ( 'database.db' )
 cursor  =  conn.cursor ()
@@ -39,10 +40,11 @@ while True:
     print("[1] Login\n [2]cadastro\n [3]Sair")
     inicial = int(input("Digite a opção"))
     if inicial == 1:
-        user = input("user: ")
+        cpf = input("cpf: ")
+        cpf = hashlib.sha256(cpf.encode()).hexdigest()
         password = input("password: ")
         password = hashlib.sha256(password.encode()).hexdigest()
-        cur.execute(f"SELECT * from bank_user WHERE user='{user}' AND password='{password}'")
+        cur.execute(f"SELECT * from bank_user WHERE cpf='{cpf}' AND password='{password}'")
         result = cursor.fetchone()
         if not cur.fetchone():
             print("Login failed")
@@ -65,19 +67,19 @@ while True:
             print(city)
             time= f"{now.day}/{now.month}/{now.year} {now.hour}:{now.minute}"
             #message
-            targetuser = user
+            '''targetuser = user
             rows = cursor.execute(
                 "SELECT number FROM bank_user WHERE user = ?",
             (targetuser,),
             ).fetchall()
             number = str(rows)
             phone_number = "+55" + number[2:13]
-            message_sing_in = client.messages.create(
+            messagesingin = client.messages.create(
             body=f"{user} a sua conta do B4Family Foi a acessada em {city} ás {time} ",
             from_=keys.twilio_number,
-            to=phone_number)
+            to=phone_number)'''
             clear_console()
-            cursor.execute(f"SELECT * from bank_user WHERE user='{user}' AND password='{password}'")
+            cursor.execute(f"SELECT * from bank_user WHERE cpf='{cpf}' AND password='{password}'")
             result = cursor.fetchone()
             fullname = result[1]
             limite = 500
@@ -85,7 +87,7 @@ while True:
             numero_saques = 0
             LIMITE_SAQUES = 3
             while True:
-                cur.execute (f"SELECT * from bank_user WHERE user='{user}' AND password = '{password}';")
+                cur.execute (f"SELECT * from bank_user WHERE cpf='{cpf}' AND password = '{password}';")
                 result = cur.fetchone()
                 conta = float(result[7])
                 id = result[0]
@@ -265,7 +267,8 @@ while True:
         s_full_name = input("fullname")
         s_email = input("email")
         s_saldo = 0.0
-        s_user = input("user")
+        s_cpf = input("cpf")
+        s_cpf = hashlib.sha256(s_cpf.encode()).hexdigest()
         s_number = input("numero")
         s_conta = gerar_numero_unico()
         s_password = input("password").encode('utf-8')
@@ -276,9 +279,9 @@ while True:
 
         if s_password == s_comfirm_password:
             cursor.execute("""
-            INSERT INTO bank_user(full_name,saldo, email, user,number, password,conta)
+            INSERT INTO bank_user(full_name,saldo, email, cpf,number, password,conta)
             VALUES (?,?,?,?,?,?,?)
-            """, (s_full_name, s_saldo,s_email, s_user, s_number, s_password, s_conta))
+            """, (s_full_name, s_saldo,s_email, s_cpf, s_number, s_password, s_conta))
             conn.commit()
             '''envio_cadastro()'''
         else:
